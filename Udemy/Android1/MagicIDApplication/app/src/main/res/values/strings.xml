@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">HelloWorld</string>
+    <string name="hint_id">Please Enter ID Number</string>
+    <string name="btnSubmit">Submit</string>
+    <string name="btn_Submit">Submit</string>
+    <string name="dob">\Date Of Birth: </string>
+    <string name="gender">\Gender:</string>
+    <string name="nationality">Nationality: </string>
+    <string name="newline">\n</string>
+    <string name="female">Female</string>
+    <string name="male">Male</string>
+    <string name="ind">Indian Citizen</string>
+    <string name="foreign">Foreigner</string>
+    <string name="invalid">Invalid ID Number</string>
+</resources>
