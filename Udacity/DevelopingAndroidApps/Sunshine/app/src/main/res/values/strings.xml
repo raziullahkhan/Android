@@ -1,4 +1,5 @@
 <resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
+
     <!-- - - - - - - - - - - - - -->
     <!-- Used throughout Sunshine-->
     <!-- - - - - - - - - - - - - -->
@@ -156,4 +157,18 @@
     <string name="condition_unknown">Unknown (<xliff:g id="conditionId">%1$d</xliff:g>)</string>
 
 
+    <!-- - - - - - - - - - - -->
+    <!-- Used by NetworkUtils-->
+    <!-- - - - - - - - - - - -->
+    <!--NONE-->
+
+    <!-- - - - - - - - - - - - - - - -->
+    <!-- Used by OpenWeatherJsonUtils-->
+    <!-- - - - - - - - - - - - - - - -->
+    <!--NONE-->
+
+    <!-- - - - - - - - - - - - - - -->
+    <!--Used by SunshinePreferences-->
+    <!-- - - - - - - - - - - - - - -->
+    <!--NONE-->
 </resources>
