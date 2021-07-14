@@ -3,6 +3,7 @@ package com.example.android.visualizerpreferences;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.EditTextPreference;
@@ -11,7 +12,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
-public class SettingsFragment  extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class SettingsFragment  extends PreferenceFragmentCompat implements SharedPreferences.
+        OnSharedPreferenceChangeListener,Preference.OnPreferenceChangeListener {
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -30,6 +32,8 @@ public class SettingsFragment  extends PreferenceFragmentCompat implements Share
                 setPreferenceSummary(p, value);
             }
         }
+        Preference preference=findPreference(getString(R.string.pref_size_key));
+        preference.setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -69,5 +73,25 @@ public class SettingsFragment  extends PreferenceFragmentCompat implements Share
         super.onDestroy();
         getPreferenceScreen().getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        Toast error= Toast.makeText(getContext(),"Please select a number between 0.1 and 3",Toast.LENGTH_SHORT);
+        String sizeKey=getString(R.string.pref_size_key);
+        if(preference.getKey().equals(sizeKey)){
+            String stringSize=(String)newValue;
+            try{
+                float size=Float.parseFloat(stringSize);
+                if(size>3||size<=0){
+                    error.show();
+                    return false;
+                }
+            }catch (NumberFormatException nfe){
+                error.show();
+                return false;
+            }
+        }
+        return true;
     }
 }
