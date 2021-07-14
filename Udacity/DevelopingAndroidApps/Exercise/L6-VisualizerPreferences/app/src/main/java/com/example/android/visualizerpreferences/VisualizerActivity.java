@@ -3,9 +3,11 @@ package com.example.android.visualizerpreferences;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.preference.PreferenceManager;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,12 +29,14 @@ public class VisualizerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visualizer);
         mVisualizerView = (VisualizerView) findViewById(R.id.activity_visualizer);
-        defaultSetup();
+        setupSharedPreferences();
         setupPermissions();
     }
 
-    private void defaultSetup() {
-        mVisualizerView.setShowBass(true);
+    private void setupSharedPreferences() {
+        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
+
+        mVisualizerView.setShowBass(sharedPreferences.getBoolean("show_bass",true));
         mVisualizerView.setShowMid(true);
         mVisualizerView.setShowTreble(true);
         mVisualizerView.setMinSizeScale(1);
