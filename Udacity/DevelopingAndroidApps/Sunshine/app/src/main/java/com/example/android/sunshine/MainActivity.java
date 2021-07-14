@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
          * the last created loader is re-used.
          */
         getSupportLoaderManager().initLoader(loaderId, bundleForLoader, callback);
+        Log.d(TAG, "onCreate: registering preference changed listener");
     }
 
     @Override
@@ -134,6 +135,11 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         }
         if(menuItemThatWasSelected==R.id.action_map){
             openLocationInMap();
+            return true;
+        }
+        if (menuItemThatWasSelected == R.id.action_settings) {
+            Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
+            startActivity(startSettingsActivity);
             return true;
         }
         return super.onOptionsItemSelected(item);
