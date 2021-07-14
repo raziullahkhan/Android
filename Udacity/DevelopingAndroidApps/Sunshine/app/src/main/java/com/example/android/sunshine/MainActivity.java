@@ -6,11 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
 import androidx.loader.content.Loader;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,13 +31,15 @@ import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements ForecastAdapter.ForecastAdapterOnClickHandler ,
-        LoaderManager.LoaderCallbacks<String[]> {
+        LoaderManager.LoaderCallbacks<String[]>, SharedPreferences
+.OnSharedPreferenceChangeListener{
     private static final String TAG = MainActivity.class.getSimpleName();
     TextView tvErrorMessage;
     private RecyclerView mRecyclerView;
     private ForecastAdapter mForecastAdapter;
     ProgressBar pbLoading;
     private static final int FORECAST_LOADER_ID = 0;
+    private static boolean PREFERENCES_HAVE_BEEN_UPDATED = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +105,8 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
          */
         getSupportLoaderManager().initLoader(loaderId, bundleForLoader, callback);
         Log.d(TAG, "onCreate: registering preference changed listener");
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -119,7 +125,21 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         mRecyclerView.setVisibility(View.INVISIBLE);
         tvErrorMessage.setVisibility(View.VISIBLE);
     }
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (PREFERENCES_HAVE_BEEN_UPDATED) {
+            Log.d(TAG, "onStart: preferences were updated");
+            getSupportLoaderManager().restartLoader(FORECAST_LOADER_ID, null, this);
+            PREFERENCES_HAVE_BEEN_UPDATED = false;
+        }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.forecast,menu);
@@ -207,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
     }
     private void openLocationInMap() {
 
-        String addressString = "1600 Ampitheatre Parkway, CA";
+        String addressString = SunshinePreferences.getPreferredWeatherLocation(this);
         Uri geoLocation = Uri.parse("geo:0,0?q=" + addressString);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -218,5 +238,10 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         } else {
             Log.d(TAG, "Couldn't call " + geoLocation.toString() + ", no receiving apps installed!");
         }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        PREFERENCES_HAVE_BEEN_UPDATED = true;
     }
 }
