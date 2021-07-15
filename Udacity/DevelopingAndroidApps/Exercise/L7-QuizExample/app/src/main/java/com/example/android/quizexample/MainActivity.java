@@ -1,12 +1,18 @@
 package com.example.android.quizexample;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.android.droidtermsprovider.DroidTermsExampleContract;
+
 public class MainActivity extends AppCompatActivity {
+    private Cursor mData;
     // The current state of the app
     private int mCurrentState;
 
@@ -26,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // Get the views
         mButton = (Button) findViewById(R.id.button_next);
+        new WordFetchTask().execute();
     }
     public void onButtonClick(View view) {
 
@@ -57,5 +64,31 @@ public class MainActivity extends AppCompatActivity {
 
         mCurrentState = STATE_SHOWN;
 
+    }
+    public class WordFetchTask extends AsyncTask<Void, Void, Cursor> {
+
+        // Invoked on a background thread
+        @Override
+        protected Cursor doInBackground(Void... params) {
+            // Make the query to get the data
+
+            // Get the content resolver
+            ContentResolver resolver = getContentResolver();
+
+            // Call the query method on the resolver with the correct Uri from the contract class
+            Cursor cursor = resolver.query(DroidTermsExampleContract.CONTENT_URI,
+                    null, null, null, null);
+            return cursor;
+        }
+
+
+        // Invoked on UI thread
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+            super.onPostExecute(cursor);
+
+            // Set the data for MainActivity
+            mData = cursor;
+        }
     }
 }
