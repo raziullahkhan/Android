@@ -6,59 +6,55 @@ import androidx.core.app.ShareCompat;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 public class DetailActivity extends AppCompatActivity {
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
-
-    private String mForecast;
+    private String mForecastSummary;
     private TextView mWeatherDisplay;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         mWeatherDisplay = (TextView) findViewById(R.id.tv_display_weather);
-
         Intent intentThatStartedThisActivity = getIntent();
-
-        // COMPLETED (2) Display the weather forecast that was passed from MainActivity
         if (intentThatStartedThisActivity != null) {
             if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
-                mForecast = intentThatStartedThisActivity.getStringExtra(Intent.EXTRA_TEXT);
-                mWeatherDisplay.setText(mForecast);
+                mForecastSummary = intentThatStartedThisActivity.getStringExtra(Intent.EXTRA_TEXT);
+                mWeatherDisplay.setText(mForecastSummary);
             }
         }
     }
-        private Intent createShareForecastIntent() {
-            Intent shareIntent = ShareCompat.IntentBuilder.from(this)
-                    .setType("text/plain")
-                    .setText(mForecast + FORECAST_SHARE_HASHTAG)
-                    .getIntent();
-            return shareIntent;
-        }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.detail, menu);
-        MenuItem menuItem = menu.findItem(R.id.action_share);
-        menuItem.setIntent(createShareForecastIntent());
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.detail, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        // COMPLETED (7) Launch SettingsActivity when the Settings option is clicked
         if (id == R.id.action_settings) {
-            Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
-            startActivity(startSettingsActivity);
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
-
+        if (id == R.id.action_share) {
+            Intent shareIntent = createShareForecastIntent();
+            startActivity(shareIntent);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private Intent createShareForecastIntent() {
+        Intent shareIntent = ShareCompat.IntentBuilder.from(this)
+                .setType("text/plain")
+                .setText(mForecastSummary + FORECAST_SHARE_HASHTAG)
+                .getIntent();
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        return shareIntent;
     }
 }
