@@ -85,7 +85,14 @@
     <string name="format_temperature_celsius">
         <xliff:g id="temp">%1.0f</xliff:g>\u00B0C
     </string>
-
+    <string name="format_pressure">
+        <xliff:g id="pressure">%1.0f</xliff:g> hPa
+    </string>
+    <string name="humidity_label">Humidity</string>
+    <!-- Humidity format -->
+    <string name="format_humidity">
+        <xliff:g id="humidity">%1.0f</xliff:g> %%
+    </string>
     <!-- Temperature format in Fahrenheit [CHAR LIMIT=5] -->
     <string name="format_temperature_fahrenheit">
         <xliff:g id="temp">%1.0f</xliff:g>\u00B0F
