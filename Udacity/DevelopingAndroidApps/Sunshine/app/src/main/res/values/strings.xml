@@ -111,6 +111,8 @@
     <string name="format_wind_mph">
         <xliff:g id="speed">%1$1.0f</xliff:g> mph <xliff:g id="direction">%2$s</xliff:g>
     </string>
+    <string name="pressure_label">Pressure</string>
+    <string name="wind_label">Wind</string>
 
     <!-- Weather Conditions (From OpenWeatherMap) -->
     <string name="condition_2xx">Storm</string>
