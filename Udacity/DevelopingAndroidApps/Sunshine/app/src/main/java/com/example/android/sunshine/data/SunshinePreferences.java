@@ -7,7 +7,7 @@ import androidx.preference.PreferenceManager;
 
 import com.example.android.sunshine.R;
 
-public class SunshinePreferences {
+public final class SunshinePreferences {
 
     /*
      * In order to uniquely pinpoint the location on the map when we launch the
