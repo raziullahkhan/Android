@@ -12,12 +12,13 @@ import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
+import timber.log.Timber;
+
 class Emojifier {
 
     private static final float EMOJI_SCALE_FACTOR = .9f;
     private static final double SMILING_PROB_THRESHOLD = .15;
     private static final double EYE_OPEN_PROB_THRESHOLD = .5;
-    private static final String LOG_TAG = Emojifier.class.getSimpleName();
 
     static Bitmap detectFacesandOverlayEmoji(Context context, Bitmap picture) {
 
@@ -28,7 +29,7 @@ class Emojifier {
 
         Frame frame = new Frame.Builder().setBitmap(picture).build();
         SparseArray<Face> faces = detector.detect(frame);
-        Log.d(LOG_TAG, "detectFaces: number of faces = " + faces.size());
+        Timber.d("detectFaces: number of faces = " + faces.size());
         Bitmap resultBitmap = picture;
         if(faces.size() == 0){
             Toast.makeText(context, R.string.no_faces_message, Toast.LENGTH_SHORT).show();
@@ -80,11 +81,12 @@ class Emojifier {
         return resultBitmap;
     }
     private static Emoji whichEmoji(Face face){
-        Log.d(LOG_TAG, "getClassifications: smilingProb = " + face.getIsSmilingProbability());
-        Log.d(LOG_TAG, "getClassifications: leftEyeOpenProb = "
+        Timber.d("whichEmoji: smilingProb = " + face.getIsSmilingProbability());
+        Timber.d("whichEmoji: leftEyeOpenProb = "
                 + face.getIsLeftEyeOpenProbability());
-        Log.d(LOG_TAG, "getClassifications: rightEyeOpenProb = "
+        Timber.d("whichEmoji: rightEyeOpenProb = "
                 + face.getIsRightEyeOpenProbability());
+
         boolean smiling = face.getIsSmilingProbability() > SMILING_PROB_THRESHOLD;
 
         boolean leftEyeClosed = face.getIsLeftEyeOpenProbability() < EYE_OPEN_PROB_THRESHOLD;
@@ -112,7 +114,7 @@ class Emojifier {
                 emoji = Emoji.FROWN;
             }
         }
-        Log.d(LOG_TAG, "whichEmoji: " + emoji.name());
+        Timber.d("whichEmoji: " + emoji.name());
         return emoji;
     }
 
