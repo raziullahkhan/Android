@@ -1,5 +1,4 @@
 package com.example.android.emojify;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
