@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         mShareFab.setVisibility(View.VISIBLE);
         mClearFab.setVisibility(View.VISIBLE);
         mResultsBitmap = BitmapUtils.resamplePic(this, mTempPhotoPath);
-        Emojifier.detectFaces(this,mResultsBitmap);
+        mResultsBitmap=Emojifier.detectFacesandOverlayEmoji(this,mResultsBitmap);
         mImageView.setImageBitmap(mResultsBitmap);
     }
 
