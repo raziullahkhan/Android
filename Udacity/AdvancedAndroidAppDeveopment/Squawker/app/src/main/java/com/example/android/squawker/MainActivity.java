@@ -1,5 +1,6 @@
 package com.example.android.squawker;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
@@ -16,10 +17,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.android.squawker.following.FollowingPreferenceActivity;
 import com.example.android.squawker.provider.SquawkContract;
 import com.example.android.squawker.provider.SquawkProvider;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceIdReceiver;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -73,6 +80,20 @@ public class MainActivity extends AppCompatActivity implements
         if(extras!=null&&extras.containsKey("Test")){
             Log.d(LOG_TAG,"Contains: "+extras.getString("Test"));
         }
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(Task<String> task) {
+                        if(!task.isSuccessful()){
+                            Log.w(LOG_TAG,"Fetching FCM registration token failed",task.getException());
+                            return;
+                        }
+                        String token=task.getResult();
+                        String msg=getString(R.string.message_token_format,token);
+                        Log.d(LOG_TAG,msg);
+                        Toast.makeText(MainActivity.this,msg,Toast.LENGTH_SHORT);
+                    }
+                });
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
