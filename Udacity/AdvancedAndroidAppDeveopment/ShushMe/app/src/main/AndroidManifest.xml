@@ -3,6 +3,7 @@
     package="com.example.android.shushme">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_my_location_primary_24dp"
