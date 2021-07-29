@@ -133,7 +133,7 @@ class Sample {
                     .show();
         }
         String userAgent = Util.getUserAgent(context, "ClassicalMusicQuiz");
-        DataSource dataSource = new DefaultDataSource(context, userAgent, false);
+        DataSource dataSource = new DefaultDataSource(context, null,userAgent, false);
         DataSpec dataSpec = new DataSpec(Uri.parse(uri));
         InputStream inputStream = new DataSourceInputStream(dataSource, dataSpec);
 
