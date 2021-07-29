@@ -41,7 +41,7 @@ import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
 
-public class QuizActivity extends AppCompatActivity implements View.OnClickListener,ExoPlayer.EventListener {
+public class QuizActivity extends AppCompatActivity implements View.OnClickListener, ExoPlayer.EventListener {
 
     private static final int CORRECT_ANSWER_DELAY_MILLIS = 1000;
     private static final String REMAINING_SONGS_KEY = "remaining_songs";
@@ -58,12 +58,16 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
-        mPlayerView= (SimpleExoPlayerView) findViewById(R.id.playerView);
+
+        // Initialize the player view.
+        mPlayerView = (SimpleExoPlayerView) findViewById(R.id.playerView);
+
 
         boolean isNewGame = !getIntent().hasExtra(REMAINING_SONGS_KEY);
 
@@ -88,16 +92,20 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
                 (getResources(), R.drawable.question_mark));
 
-
         // If there is only one answer left, end the game.
         if (mQuestionSampleIDs.size() < 2) {
             QuizUtils.endGame(this);
             finish();
         }
 
+        // Initialize the buttons with the composers names.
+        mButtons = initializeButtons(mQuestionSampleIDs);
+
         // Initialize the Media Session.
         initializeMediaSession();
+
         Sample answerSample = Sample.getSampleByID(this, mAnswerSampleID);
+
         if (answerSample == null) {
             Toast.makeText(this, getString(R.string.sample_not_found_error),
                     Toast.LENGTH_SHORT).show();
@@ -107,6 +115,11 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         // Initialize the player.
         initializePlayer(Uri.parse(answerSample.getUri()));
     }
+
+    /**
+     * Initializes the Media Session to be enabled with media buttons, transport controls, callbacks
+     * and media controller.
+     */
     private void initializeMediaSession() {
 
         // Create a MediaSessionCompat.
@@ -138,6 +151,14 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         mMediaSession.setActive(true);
 
     }
+
+    /**
+     * Initializes the button to the correct views, and sets the text to the composers names,
+     * and set's the OnClick listener to the buttons.
+     *
+     * @param answerSampleIDs The IDs of the possible answers to the question.
+     * @return The Array of initialized buttons.
+     */
     private Button[] initializeButtons(ArrayList<Integer> answerSampleIDs) {
         Button[] buttons = new Button[mButtonIDs.length];
         for (int i = 0; i < answerSampleIDs.size(); i++) {
@@ -152,6 +173,13 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         return buttons;
     }
 
+
+    // TODO (1): Create a method that shows a MediaStyle notification with two actions (play/pause, skip to previous). Clicking on the notification should launch this activity. It should take one argument that defines the state of MediaSession.
+
+    /**
+     * Initialize ExoPlayer.
+     * @param mediaUri The URI of the sample to play.
+     */
     private void initializePlayer(Uri mediaUri) {
         if (mExoPlayer == null) {
             // Create an instance of the ExoPlayer.
@@ -159,7 +187,10 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
             LoadControl loadControl = new DefaultLoadControl();
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl);
             mPlayerView.setPlayer(mExoPlayer);
+
+            // Set the ExoPlayer.EventListener to this activity.
             mExoPlayer.addListener(this);
+
             // Prepare the MediaSource.
             String userAgent = Util.getUserAgent(this, "ClassicalMusicQuiz");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
@@ -168,12 +199,25 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
             mExoPlayer.setPlayWhenReady(true);
         }
     }
+
+
+    /**
+     * Release ExoPlayer.
+     */
     private void releasePlayer() {
         mExoPlayer.stop();
         mExoPlayer.release();
         mExoPlayer = null;
     }
 
+
+    /**
+     * The OnClick method for all of the answer buttons. The method uses the index of the button
+     * in button array to to get the ID of the sample from the array of question IDs. It also
+     * toggles the UI to show the correct answer.
+     *
+     * @param v The button that was clicked.
+     */
     @Override
     public void onClick(View v) {
 
@@ -190,6 +234,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
                 userAnswerIndex = i;
             }
         }
+
         // Get the ID of the sample that the user selected.
         int userAnswerSampleID = mQuestionSampleIDs.get(userAnswerIndex);
 
@@ -218,14 +263,19 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(nextQuestionIntent);
             }
         }, CORRECT_ANSWER_DELAY_MILLIS);
-
     }
+
+    /**
+     * Disables the buttons and changes the background colors and player art to
+     * show the correct answer.
+     */
     private void showCorrectAnswer() {
         mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(this, mAnswerSampleID));
         for (int i = 0; i < mQuestionSampleIDs.size(); i++) {
             int buttonSampleID = mQuestionSampleIDs.get(i);
 
             mButtons[i].setEnabled(false);
+
             if (buttonSampleID == mAnswerSampleID) {
                 mButtons[i].getBackground().setColorFilter(ContextCompat.getColor
                                 (this, android.R.color.holo_green_light),
@@ -236,16 +286,22 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
                                 (this, android.R.color.holo_red_light),
                         PorterDuff.Mode.MULTIPLY);
                 mButtons[i].setTextColor(Color.WHITE);
-
             }
         }
     }
+
+
+    /**
+     * Release the player when the activity is destroyed.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
         releasePlayer();
         mMediaSession.setActive(false);
     }
+
+
     // ExoPlayer Event Listeners
 
     @Override
@@ -260,6 +316,13 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
     public void onLoadingChanged(boolean isLoading) {
     }
 
+    /**
+     * Method that is called when the ExoPlayer state changes. Used to update the MediaSession
+     * PlayBackState to keep in sync.
+     * @param playWhenReady true if ExoPlayer is playing, false if it's paused.
+     * @param playbackState int describing the state of ExoPlayer. Can be STATE_READY, STATE_IDLE,
+     *                      STATE_BUFFERING, or STATE_ENDED.
+     */
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         if((playbackState == ExoPlayer.STATE_READY) && playWhenReady){
@@ -270,6 +333,8 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
                     mExoPlayer.getCurrentPosition(), 1f);
         }
         mMediaSession.setPlaybackState(mStateBuilder.build());
+
+        // TODO (2): Call the method to show the notification, passing in the PlayBackStateCompat object.
     }
 
     @Override
@@ -279,6 +344,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onPositionDiscontinuity() {
     }
+
     /**
      * Media Session Callbacks, where all external clients control the player.
      */
