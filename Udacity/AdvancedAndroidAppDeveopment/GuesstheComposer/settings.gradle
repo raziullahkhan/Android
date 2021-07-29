@@ -1,0 +1,2 @@
+rootProject.name = "Guess the Composer!"
+include ':app'
