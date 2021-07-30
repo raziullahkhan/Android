@@ -106,7 +106,7 @@
         app:layout_constraintLeft_toRightOf="@+id/back_button"
         app:layout_constraintRight_toLeftOf="@+id/reset_button" />
 
-    <Floa
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/reset_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
