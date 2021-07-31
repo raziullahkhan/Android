@@ -18,11 +18,12 @@ public class OrderActivityBasicTest {
     @Rule public ActivityScenarioRule<OrderActivity> mActivityTestRule
             =new ActivityScenarioRule<OrderActivity>(OrderActivity.class);
     @Test
-    public void clickIncrementButton_ChangesQuantityAndCost(){
+    public void clickDecrementButton_ChangesQuantityAndCost(){
 
-        onView(withId(R.id.increment_button)).perform(click());
+        onView(withId(R.id.quantity_text_view)).check(matches(withText("0")));
 
-        onView(withId(R.id.quantity_text_view)).check(matches(withText("1")));
-        onView(withId(R.id.cost_text_view)).check(matches(withText(NumberFormat.getCurrencyInstance().format(5))));
+        onView(withId(R.id.decrement_button)).perform(click());
+        onView(withId(R.id.quantity_text_view)).check(matches(withText("0")));
+        onView(withId(R.id.cost_text_view)).check(matches(withText("$0.00")));
     }
 }
