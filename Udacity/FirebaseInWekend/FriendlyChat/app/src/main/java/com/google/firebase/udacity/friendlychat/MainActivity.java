@@ -29,8 +29,13 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -53,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private String mUsername;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mMessageDatabaseReference;
+    private ChildEventListener mChildEventListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +122,30 @@ public class MainActivity extends AppCompatActivity {
                 mMessageEditText.setText("");
             }
         });
+        mChildEventListener=new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot snapshot,String previousChildName) {
+                FriendlyMessage friendlyMessage=snapshot.getValue(FriendlyMessage.class);
+                mMessageAdapter.add(friendlyMessage);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot snapshot, String previousChildName) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot snapshot) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot snapshot,String previousChildName) {
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+            }
+        };
+        mMessageDatabaseReference.addChildEventListener(mChildEventListener);
     }
 
     @Override
