@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DragLinearLayout</string>
+    <string name="android">Android</string>
+    <string name="ios">Ios</string>
+</resources>
